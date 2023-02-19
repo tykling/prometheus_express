@@ -76,6 +76,7 @@ class Metric(object):
 
         self.emptyLabels = (None,) * len(labels)
         self.labelValues = self.emptyLabels
+        self.values = {}
 
         if registry != False:
             registry.register(self)
