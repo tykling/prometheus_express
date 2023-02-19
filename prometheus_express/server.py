@@ -1,4 +1,7 @@
-import socket
+import wifi
+import socketpool
+import math
+socket = socketpool.SocketPool(wifi.radio)
 
 http_break = '\r\n'
 http_encoding = 'utf-8'
@@ -31,7 +34,12 @@ class Server():
     def accept(self, router):
         conn, addr = self.http_socket.accept()
 
-        req = conn.recv(1024).decode(http_encoding)
+        # preallocate a bytearray for the request,
+        # as circuitpython SocketPool has only recv_into()
+        resp = bytearray(4096)
+        conn.recv_into(resp, 4096)
+        req = resp.decode(http_encoding)
+
         req_headers, req_body = self.parse_headers(req)
 
         handler = router.select(req_headers['method'], req_headers['path'])
